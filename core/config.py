@@ -21,8 +21,8 @@ APP_ICON = "✍️"
 
 # APIキーが無くて一覧を引けないときだけ使う暫定リスト。
 # 実際に選べるモデルは available_models() が API から取得する。
-FALLBACK_MODELS = ["gemini-2.5-flash", "gemini-2.5-pro"]
-DEFAULT_MODEL = "gemini-2.5-flash"
+FALLBACK_MODELS = ["gemini-3.8-flash"]
+DEFAULT_MODEL = "gemini-3.8-flash"
 
 # 用途のヒント。長い名前から順に判定する（flash-lite を flash より先に見る）
 _TIER_HINTS = (
@@ -82,9 +82,17 @@ def available_models(api_key: str | None) -> dict[str, str]:
 
 
 def pick_default(model_ids: list[str]) -> str:
-    """既定で選んでおくモデル。普段使いの flash を優先する。"""
-    for candidate in (DEFAULT_MODEL, *model_ids):
-        if candidate in model_ids:
-            return candidate
-    stable_flash = [m for m in model_ids if _tier(m) == "flash" and "preview" not in m]
-    return (stable_flash or model_ids or [DEFAULT_MODEL])[0]
+    """既定で選んでおくモデル。普段使いの flash を優先する。
+
+    一覧に残っていても新規ユーザーには提供終了している旧モデルがあるため、
+    model_ids（_sort_key で新しい順）のうち最新の安定版 flash を選ぶ。
+    """
+    stable_flash = [
+        m for m in model_ids
+        if _tier(m) == "flash" and "preview" not in m and "exp" not in m
+    ]
+    if stable_flash:
+        return stable_flash[0]
+    if DEFAULT_MODEL in model_ids:
+        return DEFAULT_MODEL
+    return (model_ids or [DEFAULT_MODEL])[0]
