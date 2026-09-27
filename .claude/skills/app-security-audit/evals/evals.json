@@ -1,0 +1,11 @@
+{
+  "skill_name": "app-security-audit",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "このアプリ、カフェのWi-Fiで使うこともあるんだけど、セキュリティ的に大丈夫かチェックして",
+      "expected_output": "コードを変更せず、重要度つきの日本語レポートを出す。server.address 未設定による LAN への公開（認証なし・APIキー共用・履歴の閲覧/書き出し/消去）を最上位の指摘にする。Markdown 画像による情報持ち出し、requirements と実インストール版のズレ（python-dotenv 0.21.0 < 1.0）にも触れる。pip-audit は許可なしでは実行せず『未実施』と明記する。",
+      "files": []
+    }
+  ]
+}
